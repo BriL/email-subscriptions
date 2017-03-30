@@ -1,0 +1,31 @@
+.trfs-email-container{
+  width: 100%;
+  .form-type-textfield{
+    margin-bottom: 0px;
+  }
+  a{
+    .glyphicon{
+      top: 30px;
+      padding-left: 5px;
+    }
+  }
+  .form-text{
+    display: block;
+    float: left;
+    height: 34px;
+    width: 350px;
+    width: 80%;
+    border-right: 0px;
+    border-bottom-right-radius: 0px;
+    border-top-right-radius: 0px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    padding-left: 25px;
+  }
+  .form-submit{
+    width: 20%;
+    border-left: 0px;
+    border-bottom-left-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+}

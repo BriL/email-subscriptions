@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * Implementation of hook_install().
+ */
+function trfs_email_subscriptions_install(){
+  // Use schema API to create database table.
+  drupal_install_schema('trfs_email_subscriptions');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function trfs_email_subscriptions_uninstall(){
+  // Remove tables.
+  drupal_uninstall_schema('trfs_email_subscriptions');
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function trfs_email_subscriptions_enable(){
+  // Placeholder
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function trfs_email_subscriptions_schema() {
+  $schema['trfs_email_subscriptions_emails'] = array(
+    'description' => t('Stores site types of the social_site module.'),
+    'fields' => array(
+      'eid' => array(
+        'description' => 'The primary identifier for an email.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'email' => array(
+        'description' => 'User’s e-mail address.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE
+      ),
+      'email_timestamp' => array(
+        'description' => 'The timesstamp for when the user submitted the email address.',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('eid'),
+  );
+
+  return $schema;
+}
+
+// function trfs_email_subscriptions_update_7001(){
+//   // Placeholder 
+// }
