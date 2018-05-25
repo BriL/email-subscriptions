@@ -1,0 +1,7 @@
+name = Mailchimp Integrations
+description = Form that collects users email and saves themes and make them accessible in admin backend
+package = GrandEra
+core = 7.x
+version = 7.x-0.1
+
+files[] = 'includes/mailchimpIntegrations.class.inc'

@@ -1,0 +1,138 @@
+<?php
+
+/**
+ * @file
+ *   Configurations file for the email subcription module.
+ */
+
+/**
+ * Implements hook_help()
+ */
+function mailchimp_integrations_help() {
+  $ret_val = '';
+  switch ($path) {
+    case 'admin/help#mailchimp_integrations':
+      $ret_val = '<h3>' . t('About') . '</h3>';
+      $ret_val .= '<p>' . t('The mailchimp integrations module that allows users to submit there email and alllow amdin user to email those recipents') . '</p>';
+      break;
+  }
+  return $ret_val;
+}
+
+/**
+ * Implements hook_init()
+ */
+function mailchimp_integrations_init() {
+  define('FORM_PATH', 'includes/');
+  module_load_include('inc', 'mailchimp_integrations', FORM_PATH . 'mailchimp_integrations.form');
+}
+
+/**
+ * Implements hook_menu()
+ */
+function mailchimp_integrations_menu() {
+  $items = array();
+
+  $items['admin/grandera/email-subscripton/settings'] = array(
+    'title' => 'Email Subscriptions',
+    'description' => 'Settings page for the grandera email subscripton module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('mailchimp_integrations_settings_form'),
+    'access arguments' => array('access grandera form settings'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'includes/mailchimp_integrations.admin.inc',
+  );
+
+  $items['grandera/email-subscripton/subscribe'] = array(
+    'page callback' => 'mailchimp_integrations_ajax_callback',
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('access content'),
+  );
+
+  $items['contact-us'] = array(
+    'title' => 'Contact Us',
+    'description' => 'Settings page for the grandera email subscripton module.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('contact_us_form'),
+    'access callback' => TRUE,
+    'file' => 'includes/contact_us.form.inc'
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission()
+ */
+function mailchimp_integrations_permission() {
+  return array(
+    'access grandera form settings' => array(
+      'title' => t('access grandera Forms Settings Page'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_theme()
+ */
+function mailchimp_integrations_theme() {
+  $theme_path = drupal_get_path('theme', 'grandera');
+  $template_directory = $theme_path . '/templates/modules/mailchimp_integrations/';
+
+  $items['email_subscriptions_form'] = array(
+    'render element' => 'form',
+    'template' => 'grandera-email-subscriptions',
+    'path' => $template_directory,
+  );
+
+  $items['contact_us_form'] = array(
+    'render element' => 'form',
+    'template' => 'grandera-contact-us',
+    'path' => $template_directory,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements ajax callback to submit the users name and email to then
+ * Drupal database and mailchimp database trough integration.
+ */
+function mailchimp_integrations_ajax_callback() {
+  $params = drupal_get_query_parameters();
+  // Make sure the params are set before continueing.
+  if (!empty($params)) {
+    // Initialize the granderaMailchimpIntegrations object and set the user email.
+    $granderaEmail = new mailchimpIntegrations('subscribe');
+    $granderaEmail->set_name($params['fullName']);
+    $granderaEmail->set_email($params['emailAddress']);
+    $result = $granderaEmail->save();
+
+    if ($result) {
+      try {
+        // Store the email in our database just to have another source of this data.
+        $eid = db_insert('mailchimp_integrations_emails')
+          ->fields(array(
+            'name' => $params['fullName'],
+            'email' => $params['emailAddress'],
+            'email_timestamp' => REQUEST_TIME,
+          ));
+        $eid->execute();
+
+      }
+      catch (Exception $e) {
+        watchdog("mailchimp_integrations_form_submit", '<pre>' . print_r($e->getMessage(), TRUE) . '</pre>', array(), WATCHDOG_ERROR);
+      }
+    }
+    elseif (isset($granderaEmail->errors)) {
+      // Print any errors that was returned from the mailchimp API.
+      $response = array('error' => $granderaEmail->errors);
+      drupal_json_output($response);
+    }
+    else {
+      // Failback message if call fails unexpectedly.
+      $response = array('error' => 'We are currenlty experiencing issues.');
+      drupal_json_output($response);
+    }
+  }
+}

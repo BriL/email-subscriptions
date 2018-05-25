@@ -3,37 +3,43 @@
 /**
  * Implementation of hook_install().
  */
-function trfs_email_subscriptions_install(){
+function mailchimp_integrations_install(){
   // Use schema API to create database table.
-  drupal_install_schema('trfs_email_subscriptions');
+  drupal_install_schema('mailchimp_integrations');
 }
 
 /**
  * Implementation of hook_uninstall().
  */
-function trfs_email_subscriptions_uninstall(){
+function mailchimp_integrations_uninstall(){
   // Remove tables.
-  drupal_uninstall_schema('trfs_email_subscriptions');
+  drupal_uninstall_schema('mailchimp_integrations');
 }
 
 /**
  * Implementation of hook_enable().
  */
-function trfs_email_subscriptions_enable(){
+function mailchimp_integrations_enable(){
   // Placeholder
 }
 
 /**
  * Implementation of hook_schema().
  */
-function trfs_email_subscriptions_schema() {
-  $schema['trfs_email_subscriptions_emails'] = array(
+function mailchimp_integrations_schema() {
+  $schema['mailchimp_integrations_emails'] = array(
     'description' => t('Stores site types of the social_site module.'),
     'fields' => array(
       'eid' => array(
         'description' => 'The primary identifier for an email.',
         'type' => 'serial',
         'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'name' => array(
+        'description' => 'User’s full name.',
+        'type' => 'varchar',
+        'length' => 32,
         'not null' => TRUE
       ),
       'email' => array(
@@ -55,6 +61,6 @@ function trfs_email_subscriptions_schema() {
   return $schema;
 }
 
-// function trfs_email_subscriptions_update_7001(){
-//   // Placeholder 
+// function mailchimp_integrations_update_7001(){
+//   // Placeholder
 // }

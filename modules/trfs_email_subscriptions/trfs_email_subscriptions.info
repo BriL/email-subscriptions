@@ -1,7 +1,0 @@
-name = TRFS Email Subscriptions
-description = Form that collects users email and saves thems and make them accesible in admin backend
-package = TRFS
-core = 7.x
-version = 7.x-0.1
-
-files[] = 'includes/trfsEmailSubscriptions.class.inc'
